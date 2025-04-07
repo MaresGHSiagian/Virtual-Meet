@@ -52,6 +52,7 @@ Open [http://localhost:8000](http://localhost:8000) with your browser to see the
 
 
 # Screen shots
-![Tampilan Aplikasi](assets/screenshots/screen1.png)
+![Tampilan Aplikasi](resources/screenshots/screen1.png)
+
 
 
