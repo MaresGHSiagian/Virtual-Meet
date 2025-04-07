@@ -25,7 +25,7 @@ This is a group video calling app with `Laravel` and `reactjs` using `websocket`
 ```bash
 composer install
 npm install
-npm run prod
+npm run dev
 ```
 
 - run local development server
@@ -52,4 +52,6 @@ Open [http://localhost:8000](http://localhost:8000) with your browser to see the
 
 
 # Screen shots
+![Tampilan Aplikasi](assets/screenshots/screen1.png)
+
 
