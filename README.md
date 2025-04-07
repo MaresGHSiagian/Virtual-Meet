@@ -1,4 +1,4 @@
-# Google meet clone using laravel and webrtc
+# Virtual-Meet 
 
 This is a group video calling app with `Laravel` and `reactjs` using `websocket` and `WebRTC` technology 
 
@@ -52,7 +52,7 @@ Open [http://localhost:8000](http://localhost:8000) with your browser to see the
 
 
 # Screen shots
-![Tampilan Aplikasi](resources/Screenshot.png)
+![Tampilan Aplikasi](public/screenshots/Screenshot.png)
 
 
 
