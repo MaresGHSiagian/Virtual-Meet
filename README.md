@@ -37,14 +37,12 @@ php artisan serve
 
 - run websocket server
 
-```bash
-apt install -y git python3 gcc build-essential
-```
+
 
 ```bash
 npm install -g @soketi/soketi
 ```
-you can also follow https://docs.soketi.app/getting-started/installation/cli-installation
+
 
 ```bash
 npm run socket:start
@@ -55,5 +53,3 @@ Open [http://localhost:8000](http://localhost:8000) with your browser to see the
 
 # Screen shots
 
-![Screenshot 1](./docs/screenshot1.png)
-![Screenshot 2](./docs/screenshot2.png)

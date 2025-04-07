@@ -46,7 +46,7 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
                 </p>
             </header>
 
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
+            <form onSubmit={updatePassword} className="p-4 bg-gradient-to-b from-blue-800 via-blue-900 to-blue-950 text-white rounded-lg shadow-lg">
                 <div>
                     <InputLabel htmlFor="current_password" value="Current Password" />
 
@@ -94,7 +94,7 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
                     <InputError message={errors.password_confirmation} className="mt-2" />
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 mt-4">
                     <PrimaryButton disabled={processing}>Save</PrimaryButton>
 
                     <Transition

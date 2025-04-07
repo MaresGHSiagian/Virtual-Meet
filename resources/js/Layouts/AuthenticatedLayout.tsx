@@ -10,8 +10,8 @@ export default function Authenticated({ user, header, children }: PropsWithChild
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <nav className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+        <div className="min-h-screen bg-green-100 dark:bg-gray-800">
+        <nav className="bg-gradient-to-r from-green-600 to-blue-300 shadow-md">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex">
@@ -22,12 +22,9 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
-                                </NavLink>
+                            <NavLink href={route('dashboard')} active={route().current('dashboard')} className="text-4xl font-extrabold">Dashboard</NavLink>
                             </div>
                         </div>
-
                         <div className="hidden sm:flex sm:items-center sm:ml-6">
                             <div className="ml-3 relative">
                                 <Dropdown>
@@ -35,7 +32,7 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-black dark:bg-blue-600 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
                                                 {user.name}
 
@@ -55,9 +52,10 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                                         </span>
                                     </Dropdown.Trigger>
 
-                                    <Dropdown.Content>
+                                    <Dropdown.Content contentClasses="mt-2 w-55 rounded-md shadow-lg 
+    bg-black dark:bg-blue-600 border border-gray-600 dark:border-gray-500">
                                         <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button">
+                                        <Dropdown.Link href={route('logout')} method="post" as="button" >
                                             Log Out
                                         </Dropdown.Link>
                                     </Dropdown.Content>
@@ -113,16 +111,22 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                             </ResponsiveNavLink>
                         </div>
                     </div>
+                    
                 </div>
             </nav>
 
             {header && (
-                <header className="bg-white dark:bg-gray-800 shadow">
+               <header className="bg-gradient-to-r from-green-600 to-blue-300 shadow">
                     <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{header}</div>
                 </header>
             )}
 
             <main>{children}</main>
+            
+            <footer className="bg-gradient-to-r from-green-600 to-blue-300 p-4 text-left text-white shadow-md">
+    <p>Mares Siagian-2025</p>
+</footer>
+
         </div>
     );
 }

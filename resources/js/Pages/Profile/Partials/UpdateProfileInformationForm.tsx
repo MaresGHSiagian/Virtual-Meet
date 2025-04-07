@@ -31,7 +31,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                 </p>
             </header>
 
-            <form onSubmit={submit} className="mt-6 space-y-6">
+            <form onSubmit={submit} className="p-4 bg-gradient-to-b from-blue-800 via-blue-900 to-blue-950 text-white rounded-lg shadow-lg">
                 <div>
                     <InputLabel htmlFor="name" value="Name" />
 
@@ -86,7 +86,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                     </div>
                 )}
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 mt-4">
                     <PrimaryButton disabled={processing}>Save</PrimaryButton>
 
                     <Transition

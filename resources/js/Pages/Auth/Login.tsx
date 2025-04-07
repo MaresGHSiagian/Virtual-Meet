@@ -32,13 +32,12 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
             {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
 
-            <form onSubmit={submit}>
+            <form onSubmit={submit} className="p-4 bg-gradient-to-b from-blue-800 via-blue-900 to-blue-950 text-white rounded-lg shadow-lg">
                 <div>
                     <InputLabel htmlFor="email" value="Email" />
-
                     <TextInput
                         id="email"
-                        type="email"
+                        type="email"    
                         name="email"
                         value={data.email}
                         className="mt-1 block w-full"
@@ -77,7 +76,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     </label>
                 </div>
 
-                <div className="flex items-center justify-end mt-4">
+                <div className="flex items-center justify-between mt-4">
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
@@ -90,6 +89,11 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     <PrimaryButton className="ml-4" disabled={processing}>
                         Log in
                     </PrimaryButton>
+                    <Link href={route('register')}>
+                        <PrimaryButton type="button" className="ml-4">
+                            Register
+                        </PrimaryButton>
+                    </Link>
                 </div>
             </form>
         </GuestLayout>

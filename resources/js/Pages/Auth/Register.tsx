@@ -30,7 +30,7 @@ export default function Register() {
         <GuestLayout>
             <Head title="Register" />
 
-            <form onSubmit={submit}>
+            <form onSubmit={submit} className="p-4 bg-gradient-to-b from-blue-800 via-blue-900 to-blue-950 text-white rounded-lg shadow-lg">
                 <div>
                     <InputLabel htmlFor="name" value="Name" />
 
@@ -99,7 +99,7 @@ export default function Register() {
                     <InputError message={errors.password_confirmation} className="mt-2" />
                 </div>
 
-                <div className="flex items-center justify-end mt-4">
+                <div className="flex items-center justify-between mt-4">
                     <Link
                         href={route('login')}
                         className="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
