@@ -10,6 +10,7 @@ export default {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.{js,ts,jsx,tsx}', // Perbaikan: support semua format
     ],
+    
 
     theme: {
         extend: {

@@ -47,26 +47,35 @@ export function useWebRTC({ meetingCode, userId }: { meetingCode: string, userId
             return new MediaStream();
         }
     }
-
-    const createMyVideoStream = async (video: boolean, audio: boolean) => {
-
+    const createMyVideoStream = async (
+        video: boolean,
+        audio: boolean,
+        setCameraStream?: React.Dispatch<React.SetStateAction<MediaStream | null>>
+      ): Promise<MediaStream> => {
         try {
-            const stream = await createStream({ video, audio });
-            setIsAudioMuted(!stream.getAudioTracks()[0]?.enabled);
-            setIsVideoOff(!stream.getVideoTracks()[0]?.enabled);
-            setLocalStream(stream);
-
-            return stream;
-
+          const stream = await createStream({ video, audio });
+      
+          setIsAudioMuted(!stream.getAudioTracks()[0]?.enabled);
+          setIsVideoOff(!stream.getVideoTracks()[0]?.enabled);
+          setLocalStream(stream);
+      
+          // Jika ada kamera stream yang ingin disimpan terpisah (untuk ditampilkan saat share screen)
+          if (setCameraStream && stream.getVideoTracks().length > 0) {
+            const camStream = new MediaStream([stream.getVideoTracks()[0]]);
+            setCameraStream(camStream);
+          }
+      
+          return stream;
         } catch (error) {
-            const emptyStream = new MediaStream();
-            setIsAudioMuted(true);
-            setIsVideoOff(true);
-            setLocalStream(emptyStream);
-            console.error('Error  accessing camera and microphone :', error);
-            return emptyStream;
+          const emptyStream = new MediaStream();
+          setIsAudioMuted(true);
+          setIsVideoOff(true);
+          setLocalStream(emptyStream);
+          console.error("Error accessing camera and microphone:", error);
+          return emptyStream;
         }
-    };
+      };
+          
 
     const destroyConnection = async () => {
         localStream?.getTracks().forEach(track => track.stop());
@@ -197,8 +206,11 @@ export function useWebRTC({ meetingCode, userId }: { meetingCode: string, userId
 
 
     const handleIncomingOffer = async (sender_id: number, offer: RTCSessionDescriptionInit) => {
-        const peer = peersRef.current[sender_id];
-        if (!peer) return console.error(`${sender_id} : handleIncomingOffer no peer found.`);
+        let peer = peersRef.current[sender_id];
+        if (!peer) {
+          peer = await createPeer(sender_id, localStream); // atau stream yang aktif
+        }
+        
         if (peer.signalingState !== 'stable') return;
 
         await peer.setRemoteDescription(offer);
@@ -269,39 +281,81 @@ export function useWebRTC({ meetingCode, userId }: { meetingCode: string, userId
         });
     }
 
+    // shareScreen
     const shareScreen = async () => {
         try {
-            setIsScreenSharing(true);
-            const videoToggleState = isVideoOff;
-            const screenStream = await navigator.mediaDevices.getDisplayMedia();
-            const screenVideoTrack = screenStream.getVideoTracks()[0];
-            const existingVideoTrack = localStream.getVideoTracks()[0];
-            if (existingVideoTrack) {
-                localStream.removeTrack(existingVideoTrack);
-                existingVideoTrack.stop();
-            }
-            localStream.addTrack(screenVideoTrack);
-            setIsVideoOff(false);
-            replaceRemotesStream(screenStream, !isAudioMuted, true);
-
-
-            screenVideoTrack.onended = async () => {
+            if (
+                typeof navigator === "undefined" ||
+                !navigator.mediaDevices ||
+                !navigator.mediaDevices.getDisplayMedia
+            ) {
+                console.error("getDisplayMedia tidak tersedia di environment ini.");
+                alert("Fitur share screen tidak didukung di browser ini.");
                 setIsScreenSharing(false);
+                return;
+            }
+    
+            setIsScreenSharing(true);
+    
+            // 1. Ambil stream dari layar
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            const screenVideoTrack = screenStream.getVideoTracks()[0];
+    
+            // 2. Tambahkan screen track ke semua peer
+            Object.entries(peersRef.current).forEach(([targetId, peer]) => {
+                if (peer && screenVideoTrack) {
+                    peer.addTrack(screenVideoTrack, screenStream);
+                    reNegotiation(parseInt(targetId)); // 🔥 tambahkan ini
+                }
+            });
+    
+            // 3. Saat user stop sharing screen (dari UI browser)
+            screenVideoTrack.onended = async () => {
+                try {
+                    screenVideoTrack.stop();
+                } catch (e) {
+                    console.warn("Gagal stop screen track:", e);
+                }
+            
+                setIsScreenSharing(false);
+            
+                // ✅ DETEKSI APAKAH KAMERA SEBELUMNYA AKTIF
+                const cameraTrack = localStream.getVideoTracks().find(track => track.label.toLowerCase().includes("camera"));
+                const shouldTurnOnCamera = !!cameraTrack;
 
-                const newStream = await createStream({ video: !videoToggleState, audio: !isAudioMuted });
-                if (!newStream) return console.log("Share Screen newStream not found.");
+            
+                // Stop video track yang mungkin tertinggal (share screen track)
+                const existingVideoTrack = localStream.getVideoTracks()[0];
+                if (existingVideoTrack) {
+                    localStream.removeTrack(existingVideoTrack);
+                    existingVideoTrack.stop(); // Benar-benar matikan device kamera
+                }
+            
+                // ✅ Buat ulang stream sesuai kondisi sebelumnya
+                const newStream = await createStream({
+                    video: shouldTurnOnCamera,
+                    audio: !isAudioMuted
+                });
+            
+                if (!newStream) {
+                    console.log("Tidak bisa membuat ulang stream setelah screen sharing.");
+                    return;
+                }
+            
                 setLocalStream(newStream);
-                setIsVideoOff(videoToggleState);
-                replaceRemotesStream(newStream, isAudioMuted, isVideoOff);
-
+                setIsVideoOff(!shouldTurnOnCamera);
+                replaceRemotesStream(newStream, !isAudioMuted, shouldTurnOnCamera);
             };
-
+            
+    
         } catch (error) {
+            console.error("Terjadi kesalahan saat berbagi layar:", error);
+            alert("Gagal memulai screen sharing. Coba lagi atau cek browser kamu.");
             setIsScreenSharing(false);
-            console.error('Error sharing screen:', error);
         }
     };
 
+    
 
     const toggleMic = async () => {
         if (isToggling == 'audio') return;
