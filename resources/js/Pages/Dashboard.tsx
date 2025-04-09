@@ -34,7 +34,7 @@ export default function Dashboard({ auth }: PageProps) {
             <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 bg-gradient-to-b from-blue-500 to-blue-300 shadow-xl rounded-xl p-6">
                     <div className="bg-blue-300 shadow-sm sm:rounded-lg grid  gap-4 grid-cols-1 md:grid-cols-2  h-[34rem]">
                         <div className="flex flex-col justify-center p-10">
-                            <h1 className="text-4xl font-semibold">Premium video meetings.</h1>
+                            <h1 className="text-4xl font-semibold">Lets video meetings.</h1>
                             <h1 className="mb-5 text-4xl font-semibold"> Now free for everyone.</h1>
                             <p>We re-engineered the service we built for secure business meetings, Google Meet, to make it free and available for all.</p>
                             <div className="grid grid-cols-6 gap-2 mt-10 lg:grid-cols-12">
@@ -49,9 +49,14 @@ export default function Dashboard({ auth }: PageProps) {
                         </div>
 
 
-                        <div className="flex flex-col items-center justify-center p-10 mr-10">
+                        <div className="flex flex-col items-center justify-center p-20 mr-20">
                             <div>
-                                <img width="300" src="https://www.gstatic.com/meet/user_edu_get_a_link_light_90698cd7b4ca04d3005c962a3756c42d.svg" />
+                          <img
+  src="/asset/Logo.png"
+  alt="Logo"
+  className="w-21 h-21 rounded-full mx-auto"
+/>
+
                             </div>
                             <p className="mb-2 text-2xl">Get a link you can share</p>
                             <div className="text-sm">Click <strong>New meeting</strong> to get a link you can send to people </div>

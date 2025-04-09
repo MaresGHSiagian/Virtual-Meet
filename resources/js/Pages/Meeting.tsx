@@ -135,30 +135,32 @@ export default function Meeting({ auth, id }: MeetingProps) {
         }`}
       >
         {/* Local Video */}
-        <div>
-          <div
-            className={`flex items-center justify-center bg-gray-400 ${
-              isVideoOff && !isScreenSharing ? "" : "hidden"
-            }`}
-            style={{ width: "30rem", height: "18rem" }}
-          >
-            <Avatar className="z-10" name={auth.user.name} size="2xl" />
-            {!isAudioMuted && <SoundWaveCanvas mediaStream={localStream} />}
-          </div>
-          {!isVideoOff && (
-            <video
-              autoPlay
-              id={auth.user.id.toString()}
-              muted
-              className="w-full h-full rounded"
-              ref={(videoRef) => {
-                if (videoRef && localStream) {
-                  (videoRef as HTMLVideoElement).srcObject = localStream;
-                }
-              }}
-            ></video>
-          )}
-        </div>
+        <div
+  className="relative w-[30rem] h-[18rem] rounded-xl overflow-hidden bg-black"
+>
+  {/* Of-cam */}
+  <div
+    className={`absolute inset-0 flex items-center justify-center bg-gray-400 rounded-xl transition-opacity duration-300 ${
+      isVideoOff && !isScreenSharing ? "opacity-100 z-10" : "opacity-0 -z-10"
+    }`}
+  >
+    <Avatar className="z-10" name={auth.user.name} size="2xl" />
+    {!isAudioMuted && <SoundWaveCanvas mediaStream={localStream} />}
+  </div>
+
+  {/* On-cam */}
+  <video
+    autoPlay
+    id={auth.user.id.toString()}
+    muted
+    className="absolute inset-0 w-full h-full object-cover rounded-xl"
+    ref={(videoRef) => {
+      if (videoRef && localStream) {
+        (videoRef as HTMLVideoElement).srcObject = localStream;
+      }
+    }}
+  ></video>
+</div>
 
         {/* Remote Streams + ParticipantView */}
         {meetingUsers
