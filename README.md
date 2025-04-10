@@ -52,7 +52,13 @@ Open [http://localhost:8000](http://localhost:8000) with your browser to see the
 
 
 # Screen shots
+## Home
 ![Tampilan Aplikasi](public/screenshots/Screenshot1.png)
+
+## Meet
+![Tampilan Aplikasi](public/screenshots/Screenshot2.png)
+
+
 
 
 
