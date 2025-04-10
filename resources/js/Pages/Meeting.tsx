@@ -23,6 +23,8 @@ import ButtonMic from "@/Components/ButtonMic";
 import ParticipantView from "@/Components/ParticipantView";
 import React from "react";
 import UserCameraView from "@/Components/UserCameraView";
+import MeetingTimer from "@/Components/MeetingTimer";
+
 
 interface MeetingProps extends PageProps {
   id: string;
@@ -50,9 +52,27 @@ export default function Meeting({ auth, id }: MeetingProps) {
   const [showInviteModal, setshowInviteModal] = useState(false);
   const [meetingUsers, setMeetingUsers] = useState<User[]>([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [startTime, setStartTime] = useState<Date | null>(null);
 
   const endCall = () => {
     destroyConnection();
+  
+    if (startTime) {
+      const endTime = new Date();
+      const durationInSeconds = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
+      const minutes = Math.floor(durationInSeconds / 60);
+      const seconds = durationInSeconds % 60;
+  
+      toast({
+        title: `Meeting ended (${minutes}m ${seconds}s)`,
+        status: "info",
+        position: "top-right",
+        variant: "left-accent",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  
     toast({
       title: "Call End.",
       status: "success",
@@ -61,8 +81,10 @@ export default function Meeting({ auth, id }: MeetingProps) {
       duration: 2000,
       isClosable: true,
     });
+  
     router.visit(`/dashboard`);
   };
+  
 
   const handleCopy = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -79,6 +101,10 @@ export default function Meeting({ auth, id }: MeetingProps) {
   useEffect(() => {
     const initializeVideoStream = async () => {
       const stream = await createMyVideoStream(false, false);
+    
+      // ⏰ Set waktu mulai meeting
+      setStartTime(new Date());
+    
       toast({
         title: "Call Started.",
         status: "success",
@@ -87,7 +113,7 @@ export default function Meeting({ auth, id }: MeetingProps) {
         duration: 2000,
         isClosable: true,
       });
-
+    
       if (id) {
         (window as any).Echo.join(`meeting.${id}`)
           .here(async (users: User[]) => {
@@ -110,7 +136,8 @@ export default function Meeting({ auth, id }: MeetingProps) {
             console.error({ error });
           });
       }
-    };
+    };    
+    
 
     initializeVideoStream();
 
@@ -177,6 +204,9 @@ export default function Meeting({ auth, id }: MeetingProps) {
       </div>
 
       {/* Footer Controls */}
+      <MeetingTimer />
+
+      {/* Invite Modal */}
       <div
         className={`absolute grid w-screen grid-cols-3 items-center px-10 py-4 text-white bottom-0 ${
           isScreenSharing ? "bg-green bg-opacity-70 backdrop-blur-md" : ""
@@ -250,9 +280,6 @@ export default function Meeting({ auth, id }: MeetingProps) {
     localStream={localStream}
   />
 )}
-
-
-
  
  {/* Invite Modal */}
       <div
