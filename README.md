@@ -57,7 +57,7 @@ Open [http://localhost:8000](http://localhost:8000) with your browser to see the
 
 ## Meet
 ![Tampilan Aplikasi](public/screenshots/Screenshot2.png)
-## Meet
+## Landing Page 
 ![Tampilan Aplikasi](public/screenshots/Screenshot3.png)
 
 
