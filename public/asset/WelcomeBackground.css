@@ -1,0 +1,36 @@
+.cloud {
+    position: absolute;
+    background: url('/images/cloud.png') no-repeat;
+    background-size: contain;
+    width: 300px;
+    height: 150px;
+    opacity: 0.5;
+    animation: moveClouds linear infinite;
+}
+
+.cloud-1 {
+    top: 20%;
+    left: -300px;
+    animation-duration: 60s;
+}
+
+.cloud-2 {
+    top: 40%;
+    left: -400px;
+    animation-duration: 90s;
+}
+
+.cloud-3 {
+    top: 60%;
+    left: -500px;
+    animation-duration: 120s;
+}
+
+@keyframes moveClouds {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(200vw);
+    }
+}

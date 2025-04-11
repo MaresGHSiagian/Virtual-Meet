@@ -3,18 +3,59 @@ import { useEffect, useRef, useState } from "react";
 interface ChatBoxProps {
     isOpen: boolean;
     onClose: () => void;
+    senderName: string;
 }
 
-export default function ChatBox({ isOpen, onClose }: ChatBoxProps) {
-    const [messages, setMessages] = useState<string[]>([]);
+
+export default function ChatBox({ isOpen, onClose, senderName }: ChatBoxProps) {
     const [newMessage, setNewMessage] = useState("");
     const chatContainerRef = useRef<HTMLDivElement>(null);
+    const [messages, setMessages] = useState<{ sender: string; text: string }[]>([]);
 
+
+    const getInitials = (name: string) => {
+        const words = name.trim().split(" ");
+        return words.map((word) => word[0].toUpperCase()).join("");
+    };
+    // avatar
+    const getAvatarColor = (name: string) => {
+        const colors = [
+            "bg-red-500",
+            "bg-green-500",
+            "bg-blue-500",
+            "bg-yellow-500",
+            "bg-pink-500",
+            "bg-purple-500",
+            "bg-indigo-500",
+            "bg-emerald-500",
+            "bg-teal-500",
+            "bg-orange-500"
+        ];
+    
+        // Simple hash based on character codes
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+    
+        const index = Math.abs(hash) % colors.length;
+        return colors[index];
+    };
+    
+    
     const sendMessage = () => {
         if (newMessage.trim() === "") return;
-        setMessages(prevMessages => [...prevMessages, newMessage]);
+    
+        const initials = getInitials(senderName);
+        const message = {
+            sender: initials,
+            text: newMessage,
+        };
+    
+        setMessages((prevMessages) => [...prevMessages, message]);
         setNewMessage("");
     };
+    
 
     useEffect(() => {
         if (chatContainerRef.current) {
@@ -28,18 +69,23 @@ export default function ChatBox({ isOpen, onClose }: ChatBoxProps) {
         <div className="absolute bottom-20 right-5 w-80 h-96 p-4 rounded-2xl shadow-2xl bg-gradient-to-br from-white/80 to-green-50/60 backdrop-blur-md border border-white-100 text-black flex flex-col">
             {/* Header */}
             <div className="flex justify-between items-center mb-2">
-                <h2 className="text-lg font-bold">Chat</h2>
-                <button 
-                    className="text-red-500 hover:text-red-700 focus:outline-none" 
-                    onClick={onClose} 
-                    aria-label="Close Chat"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="31" height="31" viewBox="0 0 16 16">
-                        <path fill="currentColor" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                    </svg>
-                </button>
-            </div>
+  <h2 className="text-lg font-bold">Chat</h2>
 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="31"
+    height="31"
+    viewBox="0 0 16 16"
+    onClick={onClose}
+    aria-label="Close Chat"
+    className="text-red-500 hover:text-red-700 focus:outline-none cursor-pointer"
+  >
+    <path
+      fill="currentColor"
+      d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"
+    />
+  </svg>
+</div>
             {/* Chat Messages */}
             <div
                 ref={chatContainerRef}
@@ -49,22 +95,35 @@ export default function ChatBox({ isOpen, onClose }: ChatBoxProps) {
                     scrollbarColor: "#93c5fd transparent", // For Firefox
                 }}
             >
-                {messages.length === 0 ? (
-                    <p className="text-gray-500 text-sm text-center">No messages yet...</p>
-                ) : (
-                    messages.map((msg, index) => (
-                        <div key={index} className="bg-gradient-to-r from-blue-200 to-blue-100 p-3 my-1 rounded-xl shadow-md border border-blue-300 text-sm">
-                            {msg}
-                        </div>
-                    ))
-                )}
+              
+              {messages.length === 0 ? (
+    <p className="text-gray-500 text-sm text-center">No messages yet...</p>
+) : (
+    messages.map((msg, index) => (
+        <div
+            key={index}
+            className="flex items-start gap-2 my-2"
+        >
+            {/* Avatar */}
+            <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-sm shadow-md ${getAvatarColor(msg.sender)}`}>
+    {msg.sender}
+</div>
+
+
+            {/* Message bubble */}
+            <div className="bg-gradient-to-r from-blue-200 to-blue-100 p-2 rounded-xl shadow-md border border-blue-300 text-sm max-w-[75%]">
+                {msg.text}
+            </div>
+        </div>
+    ))
+)}
             </div>
 
             {/* Input & Send Button */}
             <div className="mt-2 flex">
                 <input
                     type="text"
-                    className="flex-1 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 p-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-xs"
                     placeholder="Type a message..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
@@ -72,7 +131,7 @@ export default function ChatBox({ isOpen, onClose }: ChatBoxProps) {
                     aria-label="Message Input"
                 />
                 <button
-                    className="ml-2 bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition"
+                   className="ml-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition text-sm"
                     onClick={sendMessage}
                     aria-label="Send Message"
                 >

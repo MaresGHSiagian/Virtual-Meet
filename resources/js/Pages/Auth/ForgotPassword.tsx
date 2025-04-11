@@ -19,14 +19,15 @@ export default function ForgotPassword({ status }: { status?: string }) {
     return (
         <GuestLayout>
             <Head title="Forgot Password" />
-
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            <div className="bg-white/70 p-4 rounded-md shadow-md">
+  <p className="text-black text-base"></p>
                 Forgot your password? No problem. Just let us know your email address and we will email you a password
                 reset link that will allow you to choose a new one.
             </div>
 
             {status && (
-  <div className="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
+  <div className="mb-4 font-medium text-sm text-balck-600 dark:text-green-400">
+    
     Reset link successfully sent.
   </div>
 )}
@@ -38,20 +39,19 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     type="email"
                     name="email"
                     value={data.email}
-                    className="mt-1 block w-full"
+                    className="mt-1 block w-full text-red"
                     isFocused={true}
                     onChange={(e) => setData('email', e.target.value)}
                 />
 
                 <InputError message={errors.email} className="mt-2" />
-
                 <div className="flex items-center justify-between mt-4">
-                    <a
-                        href={route('login')}
-                        className="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                    >
-                        Back to Login
-                    </a>
+    <a
+        href={route('login')}
+        className="bg-white/70 px-3 py-1 rounded-md text-sm text-black hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+    >
+        Back to Login
+    </a>
                     <PrimaryButton className="ml-4" disabled={processing}>
                         Email Password Reset Link
                     </PrimaryButton>

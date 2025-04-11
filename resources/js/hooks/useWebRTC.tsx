@@ -38,6 +38,8 @@ export function useWebRTC({ meetingCode, userId }: { meetingCode: string, userId
 
     const [localStream, setLocalStream] = useState<MediaStream>(new MediaStream());
     const [remoteStreams, setRemoteStreams] = useState<Record<number, MediaStream>>({});
+    const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
+
 
     const createStream = async ({ audio, video }: { audio: boolean, video: boolean }) => {
         try {
@@ -75,11 +77,14 @@ export function useWebRTC({ meetingCode, userId }: { meetingCode: string, userId
           return emptyStream;
         }
       };
-          
-
+        //   MENGAMBIL STOPSCREEN OF SEMUA
     const destroyConnection = async () => {
         localStream?.getTracks().forEach(track => track.stop());
 
+           if (screenStream) {
+            screenStream.getTracks().forEach(track => track.stop());
+            setScreenStream(null);
+        }
         Object.values(remoteStreams).forEach((stream) => {
             stream.getTracks().forEach(track => track.stop());
         });
@@ -299,6 +304,7 @@ export function useWebRTC({ meetingCode, userId }: { meetingCode: string, userId
     
             // 1. Ambil stream dari layar
             const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            setScreenStream(screenStream); // ✅ simpan di state
             const screenVideoTrack = screenStream.getVideoTracks()[0];
     
             // 2. Tambahkan screen track ke semua peer

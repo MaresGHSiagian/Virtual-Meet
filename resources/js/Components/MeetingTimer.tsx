@@ -19,7 +19,7 @@ export default function MeetingTimer() {
   }, []);
 
   return (
-    <div className="absolute top-4 right-4 bg-opacity-60 text-white px-4 py-2 rounded-lg flex items-center space-x-2 shadow-lg z-50">
+    <div className="absolute top-1 right-5 bg-opacity-60 text-white px-4 py-2 rounded-lg flex items-center space-x-2 shadow-lg z-50">
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="16"

@@ -30,7 +30,7 @@ export default function Register() {
         <GuestLayout>
             <Head title="Register" />
 
-            <form onSubmit={submit} className="p-4 bg-gradient-to-b from-blue-800 via-blue-900 to-blue-950 text-white rounded-lg shadow-lg">
+            <form onSubmit={submit}  className="w-full p-2 mt-2 mb-4 bg-blue-400/30 text-black placeholder-blue-800 border border-blue-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <div>
                     <InputLabel htmlFor="name" value="Name" />
 
@@ -102,7 +102,7 @@ export default function Register() {
                 <div className="flex items-center justify-between mt-4">
                     <Link
                         href={route('login')}
-                        className="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                        className="underline text-sm text-black-600 dark:text-black-400 hover:text-blue-900 dark:hover:text-blue-600 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                     >
                         Already registered?
                     </Link>

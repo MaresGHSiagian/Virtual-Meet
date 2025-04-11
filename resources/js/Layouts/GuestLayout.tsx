@@ -4,14 +4,23 @@ import { PropsWithChildren } from 'react';
 
 export default function Guest({ children }: PropsWithChildren) {
     return (
-        <div className="relative min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-r from-blue-950 to-green-900 dark:from-gray-900 dark:to-blue-950">
+        <div className="relative min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 overflow-hidden">
+            {/* Background SVG */}
+            <div className="absolute inset-0 -z-10 flex justify-center items-center">
+                <img
+                    src="/asset/Login.svg"
+                    alt="Login Illustration"
+                    className="w-full max-w-1xl h-auto object-cover opacity-90"
+                />
+            </div>
+
             <div>
                 <Link href="/">
                     <ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />
                 </Link>
             </div>
 
-            <div className="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md sm:rounded-lg">
+            <div className="w-full max-w-md px-4 z-10">
                 {children}
             </div>
         </div>

@@ -1,18 +1,14 @@
-// Meeting.tsx
 import { Head, router } from "@inertiajs/react";
-import PrimaryButton from "@/Components/PrimaryButton";
-import { useMeeting } from "@videosdk.live/react-sdk";
-import {
-  AiOutlineAudio, AiOutlineAudioMuted, AiOutlineClose, AiOutlineCopy
-} from "react-icons/ai";
+import { useEffect, useState } from "react";
+import { Avatar, useToast } from "@chakra-ui/react";
+import Moment from "react-moment";
 import { BsCameraVideo, BsCameraVideoOff } from "react-icons/bs";
-import { LuScreenShare, LuScreenShareOff } from "react-icons/lu";
 import { HiPhoneMissedCall } from "react-icons/hi";
+import { AiOutlineClose, AiOutlineCopy } from "react-icons/ai";
+
 import { useWebRTC, WebRTCState } from "@/hooks/useWebRTC";
 import { PageProps, User } from "@/types";
-import { useEffect, useState } from "react";
-import Moment from "react-moment";
-import { Avatar, useToast } from "@chakra-ui/react";
+import PrimaryButton from "@/Components/PrimaryButton";
 import SoundWaveCanvas from "@/Components/SoundWaveCanvas";
 import RemoteStreamDisplay from "@/Components/RemoteStreamDisplay";
 import ChatBox from "@/Components/Chatbox";
@@ -21,10 +17,8 @@ import ButtonVideo from "@/Components/ButtonVideo";
 import ShareScreenButton from "@/Components/ShareScreenButton";
 import ButtonMic from "@/Components/ButtonMic";
 import ParticipantView from "@/Components/ParticipantView";
-import React from "react";
 import UserCameraView from "@/Components/UserCameraView";
 import MeetingTimer from "@/Components/MeetingTimer";
-
 
 interface MeetingProps extends PageProps {
   id: string;
@@ -56,35 +50,32 @@ export default function Meeting({ auth, id }: MeetingProps) {
 
   const endCall = () => {
     destroyConnection();
-  
+
     if (startTime) {
-      const endTime = new Date();
-      const durationInSeconds = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
+      const durationInSeconds = Math.floor((new Date().getTime() - startTime.getTime()) / 1000);
       const minutes = Math.floor(durationInSeconds / 60);
       const seconds = durationInSeconds % 60;
-  
       toast({
-        title: `Meeting ended (${minutes}m ${seconds}s)`,
+        title: `Duration Meeting (${minutes}m ${seconds}s)`,
         status: "info",
         position: "top-right",
         variant: "left-accent",
-        duration: 4000,
+        duration: 3000,
         isClosable: true,
       });
+      toast({
+        title: `Call ended`,
+        status: "success",
+        position: "top-right",
+        variant: "left-accent",
+        duration: 2000,
+        isClosable: true,
+      });
+
     }
-  
-    toast({
-      title: "Call End.",
-      status: "success",
-      position: "top-right",
-      variant: "left-accent",
-      duration: 2000,
-      isClosable: true,
-    });
-  
+
     router.visit(`/dashboard`);
   };
-  
 
   const handleCopy = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -101,10 +92,8 @@ export default function Meeting({ auth, id }: MeetingProps) {
   useEffect(() => {
     const initializeVideoStream = async () => {
       const stream = await createMyVideoStream(false, false);
-    
-      // ⏰ Set waktu mulai meeting
       setStartTime(new Date());
-    
+      
       toast({
         title: "Call Started.",
         status: "success",
@@ -113,7 +102,7 @@ export default function Meeting({ auth, id }: MeetingProps) {
         duration: 2000,
         isClosable: true,
       });
-    
+
       if (id) {
         (window as any).Echo.join(`meeting.${id}`)
           .here(async (users: User[]) => {
@@ -136,8 +125,7 @@ export default function Meeting({ auth, id }: MeetingProps) {
             console.error({ error });
           });
       }
-    };    
-    
+    };
 
     initializeVideoStream();
 
@@ -150,46 +138,43 @@ export default function Meeting({ auth, id }: MeetingProps) {
     <div className="relative w-screen h-screen bg-gradient-to-b from-gray-900 via-blue-950 to-green-900">
       <Head title="Meeting" />
 
-      {/* Local username */}
       <div className="absolute text-sm font-bold text-white bottom-20 left-10">
         {auth?.user.name || ""}
       </div>
 
-      {/* Video Grid */}
-      <div
-        className={`grid h-full grid-cols-1 gap-2 px-10 pt-10 pb-32 sm:grid-cols-2 md:grid-cols-3 ${
-          isScreenSharing ? "hidden" : ""
-        }`}
-      >
-        {/* Local Video */}
+      <div className={`grid h-full grid-cols-1 gap-2 px-10 pt-10 pb-32 sm:grid-cols-2 md:grid-cols-3 ${
+        isScreenSharing ? "hidden" : ""
+      }`}>
+        <div>
         <div
-  className="relative w-[30rem] h-[18rem] rounded-xl overflow-hidden bg-black"
+  className="relative w-[30rem] h-[18rem] overflow-hidden rounded-2xl bg-gray-400"
 >
-  {/* Of-cam */}
+  {/* Kamera Nyala */}
+  <video
+    autoPlay
+    muted
+    className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-300 ${
+      isVideoOff ? "opacity-0" : "opacity-100"
+    }`}
+    ref={(videoRef) => {
+      if (videoRef && localStream) {
+        videoRef.srcObject = localStream;
+      }
+    }}
+  />
+
+  {/* Kamera Mati */}
   <div
-    className={`absolute inset-0 flex items-center justify-center bg-gray-400 rounded-xl transition-opacity duration-300 ${
-      isVideoOff && !isScreenSharing ? "opacity-100 z-10" : "opacity-0 -z-10"
+    className={`absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center transition-opacity duration-300 ${
+      isVideoOff ? "opacity-100" : "opacity-0"
     }`}
   >
     <Avatar className="z-10" name={auth.user.name} size="2xl" />
     {!isAudioMuted && <SoundWaveCanvas mediaStream={localStream} />}
   </div>
-
-  {/* On-cam */}
-  <video
-    autoPlay
-    id={auth.user.id.toString()}
-    muted
-    className="absolute inset-0 w-full h-full object-cover rounded-xl"
-    ref={(videoRef) => {
-      if (videoRef && localStream) {
-        (videoRef as HTMLVideoElement).srcObject = localStream;
-      }
-    }}
-  ></video>
 </div>
+        </div>
 
-        {/* Remote Streams + ParticipantView */}
         {meetingUsers
           .filter((x) => x.id !== auth.user.id)
           .map((user) => (
@@ -203,25 +188,21 @@ export default function Meeting({ auth, id }: MeetingProps) {
           ))}
       </div>
 
-      {/* Footer Controls */}
       <MeetingTimer />
 
-      {/* Invite Modal */}
-      <div
-        className={`absolute grid w-screen grid-cols-3 items-center px-10 py-4 text-white bottom-0 ${
-          isScreenSharing ? "bg-green bg-opacity-70 backdrop-blur-md" : ""
-        }`}
-      >
+      {/* Control Bar */}
+      <div className={`absolute grid w-screen grid-cols-3 items-center px-10 py-4 text-white bottom-0 ${
+        isScreenSharing ? "bg-green bg-opacity-70 backdrop-blur-md" : ""
+      }`}>
         <div className="flex">
           <div className="mr-1 cursor-not-allowed">
-            <Moment className="mr-1" format="h:mm A" /> |
+            <Moment className="mr-1" format="h:mm A" />
           </div>
           <div>{id}</div>
         </div>
 
         <div className="space-x-2 text-center">
           <ButtonMic isAudioMuted={isAudioMuted} toggleMic={toggleMic} isToggling={isToggling} />
-
           <ButtonVideo
             onClick={toggleVideo}
             disabled={isToggling === "video"}
@@ -249,44 +230,42 @@ export default function Meeting({ auth, id }: MeetingProps) {
         </div>
 
         <div className="flex justify-end">
-        <PrimaryButton
-  onClick={() => setIsChatOpen(!isChatOpen)}
-  className="text-xl px-3 py-2 !bg-blue-400 text-white rounded-lg"
-  aria-label={isChatOpen ? "Close Chat" : "Open Chat"} // aksesibilitas
->
   <svg
+    onClick={() => setIsChatOpen(!isChatOpen)}
     xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
+    width="32"
+    height="32"
     fill="currentColor"
+    className="text-black-900 hover:text-gray-900 cursor-pointer transition-colors duration-200"
+    aria-label={isChatOpen ? "Close Chat" : "Open Chat"}
     viewBox="0 0 16 16"
   >
-    <path d="M11.176 14.429c-2.665 0-4.826-1.8-4.826-4.018 0-2.22 2.159-4.02 4.824-4.02S16 8.191 16 10.411c0 1.21-.65 2.301-1.666 3.036a.32.32 0 0 0-.12.366l.218.81a.6.6 0 0 1 .029.117.166.166 0 0 1-.162.162.2.2 0 0 1-.092-.03l-1.057-.61a.5.5 0 0 0-.256-.074.5.5 0 0 0-.142.021 5.7 5.7 0 0 1-1.576.22" />
-    <path d="M0 6.826c0 1.455.781 2.765 2.001 3.656a.385.385 0 0 1 .143.439l-.161.6-.1.373a.5.5 0 0 0-.032.14.19.19 0 0 0 .193.193q.06 0 .111-.029l1.268-.733a.6.6 0 0 1 .308-.088q.088 0 .171.025a6.8 6.8 0 0 0 1.625.26 4.5 4.5 0 0 1-.177-1.251c0-2.936 2.785-5.02 5.824-5.02l.15.002C10.587 3.429 8.392 2 5.796 2 2.596 2 0 4.16 0 6.826m4.632-1.555a.77.77 0 1 1-1.54 0 .77.77 0 0 1 1.54 0m3.875 0a.77.77 0 1 1-1.54 0 .77.77 0 0 1 1.54 0" />
+    <path d="M11.176 14.429c-2.665 0-4.826-1.8-4.826-4.018 0-2.22 2.159-4.02 4.824-4.02S16 8.191 16 10.411c0 1.21-.65 2.301-1.666 3.036a.32.32 0 0 0-.12.366l.218.81a.6.6 0 0 1 .029.117.166.166 0 0 1-.162.162.2.2 0 0 1-.092-.03l-1.057-.61a.5.5 0 0 0-.256-.074.5.5 0 0 0-.142.021 5.7 5.7 0 0 1-1.576.22M9.064 9.542a.647.647 0 1 0 .557-1 .645.645 0 0 0-.646.647.6.6 0 0 0 .09.353Zm3.232.001a.646.646 0 1 0 .546-1 .645.645 0 0 0-.644.644.63.63 0 0 0 .098.356"/>
+    <path d="M0 6.826c0 1.455.781 2.765 2.001 3.656a.385.385 0 0 1 .143.439l-.161.6-.1.373a.5.5 0 0 0-.032.14.19.19 0 0 0 .193.193q.06 0 .111-.029l1.268-.733a.6.6 0 0 1 .308-.088q.088 0 .171.025a6.8 6.8 0 0 0 1.625.26 4.5 4.5 0 0 1-.177-1.251c0-2.936 2.785-5.02 5.824-5.02l.15.002C10.587 3.429 8.392 2 5.796 2 2.596 2 0 4.16 0 6.826m4.632-1.555a.77.77 0 1 1-1.54 0 .77.77 0 0 1 1.54 0m3.875 0a.77.77 0 1 1-1.54 0 .77.77 0 0 1 1.54 0"/>
   </svg>
-</PrimaryButton>
+</div>
+            
+        <ChatBox
+    isOpen={isChatOpen}
+    onClose={() => setIsChatOpen(false)}
+    senderName={auth.user.name}
+/>
 
-        </div>
-
-        <ChatBox isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
       </div>
 
-      {/* Webcam preview during screen share */}
       {isScreenSharing && (
-  <UserCameraView
-    isVideoOff={isVideoOff}
-    isScreenSharing={isScreenSharing}
-    username={auth.user.name}
-    localStream={localStream}
-  />
-)}
- 
- {/* Invite Modal */}
-      <div
-        className={`absolute p-5 bg-white rounded-lg w-80 bottom-20 left-10 ${
-          showInviteModal ? "" : "hidden"
-        }`}
-      >
+        <UserCameraView
+          isVideoOff={isVideoOff}
+          isScreenSharing={isScreenSharing}
+          username={auth.user.name}
+          localStream={localStream}
+        />
+      )}
+
+      {/* Invite Modal */}
+      <div className={`absolute p-5 bg-white rounded-lg w-80 bottom-20 left-10 ${
+        showInviteModal ? "" : "hidden"
+      }`}>
         <div className="flex justify-between mb-5">
           <h1 className="text-lg font-bold">Your meeting's ready</h1>
           <button onClick={() => setshowInviteModal(false)}>

@@ -6,11 +6,36 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 import { User } from '@/types';
 
+
+const getAvatarColor = (name: string) => {
+    const colors = [
+        "bg-red-500", "bg-green-500", "bg-blue-500", "bg-yellow-500",
+        "bg-purple-500", "bg-pink-500", "bg-indigo-500", "bg-teal-500",
+        "bg-orange-500", "bg-rose-500"
+    ];
+
+    // Buat hash sederhana dari nama
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+};
+
+const getInitials = (name: string) => {
+    const words = name.trim().split(" ");
+    return words.map((word) => word[0].toUpperCase()).join("").slice(0, 2); // maksimal 2 huruf
+};
+
+
+
 export default function Authenticated({ user, header, children }: PropsWithChildren<{ user: User, header?: ReactNode }>) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
-        <div className="min-h-screen bg-green-100 dark:bg-gray-800">
+        <div className="min-h-screen min-w-[75vw] overflow-x-auto bg-green-100 dark:bg-gray-800">
         <nav className="bg-gradient-to-r from-green-600 to-blue-300 shadow-md">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
@@ -27,30 +52,30 @@ export default function Authenticated({ user, header, children }: PropsWithChild
                         </div>
                         <div className="hidden sm:flex sm:items-center sm:ml-6">
                             <div className="ml-3 relative">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-black dark:bg-blue-600 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
-                                            >
-                                                {user.name}
+                            <Dropdown>
+    <Dropdown.Trigger>
+        <span className="inline-flex items-center gap-1 rounded-md cursor-pointer">
+            {/* Avatar inisial */}
+            <div className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold text-sm">
+                {getInitials(user.name)}
+            </div>
 
-                                                <svg
-                                                    className="ml-2 -mr-0.5 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </Dropdown.Trigger>
+            {/* Dropdown Arrow */}
+            {/* <svg
+                className="md-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+            >
+                <path
+                    fillRule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                />
+            </svg> */}
+        </span>
+    </Dropdown.Trigger>
+                                
 
                                     <Dropdown.Content contentClasses="mt-2 w-55 rounded-md shadow-lg 
     bg-black dark:bg-blue-600 border border-gray-600 dark:border-gray-500">
@@ -98,8 +123,8 @@ export default function Authenticated({ user, header, children }: PropsWithChild
 
                     <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
                         <div className="px-4">
-                            <div className="font-medium text-base text-gray-800 dark:text-gray-200">
-                                {user.name}
+                           <div className="font-bold text-white bg-blue-500 w-10 h-10 rounded-full flex items-center justify-center mb-1">
+                            {getInitials(user.name)}
                             </div>
                             <div className="font-medium text-sm text-gray-500">{user.email}</div>
                         </div>

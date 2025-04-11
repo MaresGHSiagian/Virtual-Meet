@@ -14,7 +14,7 @@ const ButtonMic: React.FC<ButtonMicProps> = ({ isAudioMuted, toggleMic, isToggli
             onClick={toggleMic}
             disabled={isToggling === "audio"}
             className={`px-4 py-2 text-white rounded transition-all duration-300
-                ${isAudioMuted ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"}
+                ${isAudioMuted ? "bg-gray-600 hover:bg-gray-700" : "bg-gray-600 hover:bg-gray-700"}
                 ${isToggling === "audio" ? "opacity-50 cursor-not-allowed" : ""}`}
         >
             {isAudioMuted ? (
