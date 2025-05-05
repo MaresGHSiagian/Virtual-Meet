@@ -42,21 +42,68 @@ export default function ChatBox({ isOpen, onClose, senderName }: ChatBoxProps) {
         return colors[index];
     };
     
-    
-    const sendMessage = () => {
+    // Ambil pesan dari backend
+    const fetchMessages = async () => {
+        try {
+            const response = await fetch("/api/chat", {
+                headers: {
+                    "Accept": "application/json",
+                },
+            });
+            if (!response.ok) throw new Error("Failed to fetch messages");
+            const data = await response.json();
+            // Pastikan data berupa array of { sender, text }
+            setMessages(data);
+        } catch (error) {
+            // Opsional: tampilkan error ke user
+            // alert("Gagal mengambil pesan");
+        }
+    };
+
+    // Kirim pesan ke backend
+    const sendMessageToBackend = async (sender: string, text: string) => {
+        try {
+            const response = await fetch("/api/chat/send", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+                body: JSON.stringify({ sender, text }),
+            });
+            if (!response.ok) {
+                throw new Error("Failed to send message");
+            }
+            // Bisa return response.json() jika backend mengembalikan data
+        } catch (error) {
+            alert("Gagal mengirim pesan");
+        }
+    };
+
+    const sendMessage = async () => {
         if (newMessage.trim() === "") return;
-    
+
         const initials = getInitials(senderName);
         const message = {
             sender: initials,
             text: newMessage,
         };
-    
-        setMessages((prevMessages) => [...prevMessages, message]);
+
+        await sendMessageToBackend(message.sender, message.text);
+
+        // Setelah kirim, refresh pesan dari backend agar sinkron
+        await fetchMessages();
         setNewMessage("");
     };
-    
 
+    // Ambil pesan saat chatbox dibuka
+    useEffect(() => {
+        if (isOpen) {
+            fetchMessages();
+        }
+    }, [isOpen]);
+
+    // Scroll ke bawah setiap ada pesan baru
     useEffect(() => {
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;

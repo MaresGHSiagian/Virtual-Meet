@@ -7,16 +7,19 @@ interface ParticipantViewProps {
   participantId: string;
   isScreenShare?: boolean;
   isThumbnail?: boolean;
+  mediaStream?: MediaStream; // Tambahkan ini
 }
 
 export default function ParticipantView({
   participantId,
   isScreenShare = false,
   isThumbnail = false,
+  mediaStream, // Tambahkan ini
 }: ParticipantViewProps) {
   const { webcamStream, screenShareStream, webcamOn, screenShareOn } = useParticipant(participantId);
 
-  const mediaStream = useMemo(() => {
+  const computedStream = useMemo(() => {
+    if (mediaStream) return mediaStream; // Jika ada mediaStream dari props, gunakan itu
     const stream = new MediaStream();
     if (isScreenShare && screenShareOn && screenShareStream) {
       stream.addTrack(screenShareStream.track);
@@ -24,9 +27,9 @@ export default function ParticipantView({
       stream.addTrack(webcamStream.track);
     }
     return stream;
-  }, [isScreenShare, screenShareOn, screenShareStream, webcamOn, webcamStream]);
+  }, [mediaStream, isScreenShare, screenShareOn, screenShareStream, webcamOn, webcamStream]);
 
-  if (!mediaStream) return null;
+  if (!computedStream) return null;
 
   return (
     <ReactPlayer
@@ -34,7 +37,7 @@ export default function ParticipantView({
       muted
       height={isThumbnail ? "120px" : "100%"}
       width={isThumbnail ? "100%" : "100%"}
-      url={mediaStream}
+      url={computedStream}
     />
   );
 }

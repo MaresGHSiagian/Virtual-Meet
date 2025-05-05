@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\Chat;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +18,19 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-// routes/api.php
+
+Route::get('/chat', function () {
+    return Chat::orderBy('created_at')->get(['sender', 'text']);
+});
+
+Route::post('/chat/send', function (Request $request) {
+    $data = $request->validate([
+        'sender' => 'required|string|max:255',
+        'text' => 'required|string',
+    ]);
+    Chat::create($data);
+    return response()->json(['success' => true]);
+});
 
 
 

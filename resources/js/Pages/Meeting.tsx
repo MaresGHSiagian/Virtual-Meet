@@ -5,10 +5,9 @@ import Moment from "react-moment";
 import { BsCameraVideo, BsCameraVideoOff } from "react-icons/bs";
 import { HiPhoneMissedCall } from "react-icons/hi";
 import { AiOutlineClose, AiOutlineCopy } from "react-icons/ai";
-
+import { FaUsers } from "react-icons/fa";
 import { useWebRTC, WebRTCState } from "@/hooks/useWebRTC";
 import { PageProps, User } from "@/types";
-import PrimaryButton from "@/Components/PrimaryButton";
 import SoundWaveCanvas from "@/Components/SoundWaveCanvas";
 import RemoteStreamDisplay from "@/Components/RemoteStreamDisplay";
 import ChatBox from "@/Components/Chatbox";
@@ -60,7 +59,7 @@ export default function Meeting({ auth, id }: MeetingProps) {
         status: "info",
         position: "top-right",
         variant: "left-accent",
-        duration: 3000,
+        duration: 2000,
         isClosable: true,
       });
       toast({
@@ -201,7 +200,7 @@ export default function Meeting({ auth, id }: MeetingProps) {
           <div>{id}</div>
         </div>
 
-        <div className="space-x-2 text-center">
+        <div className="space-x-2 text-center flex items-center">
           <ButtonMic isAudioMuted={isAudioMuted} toggleMic={toggleMic} isToggling={isToggling} />
           <ButtonVideo
             onClick={toggleVideo}
@@ -227,6 +226,17 @@ export default function Meeting({ auth, id }: MeetingProps) {
           >
             <HiPhoneMissedCall className="w-5 h-5" />
           </ButtonEnd>
+
+          {/* Participant count di sebelah call end, tampilan lebih bagus */}
+          <div className="relative ml-4">
+            <div className="flex items-center px-2 py-1 rounded-full bg-gradient-to-r from-blue-500 to-green-400 shadow-lg text-white font-bold transition hover:scale-105 cursor-pointer">
+              <FaUsers className="mr-2 text-xl" />
+              <span className="text-lg">{meetingUsers.length}</span>
+            </div>
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5 shadow animate-bounce">
+              {meetingUsers.length}
+            </span>
+          </div>
         </div>
 
         <div className="flex justify-end">
