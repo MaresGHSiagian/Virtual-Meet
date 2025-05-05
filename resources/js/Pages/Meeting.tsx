@@ -230,7 +230,7 @@ export default function Meeting({ auth, id }: MeetingProps) {
           {/* Participant count di sebelah call end, tampilan lebih bagus */}
           <div className="relative ml-4">
             <div className="flex items-center px-2 py-1 rounded-full bg-gradient-to-r from-blue-500 to-green-400 shadow-lg text-white font-bold transition hover:scale-105 cursor-pointer">
-              <FaUsers className="mr-2 text-xl" />
+              <FaUsers className="mr-3 text-xl" />
               <span className="text-lg">{meetingUsers.length}</span>
             </div>
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-0.5 shadow animate-bounce">
