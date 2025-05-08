@@ -17,7 +17,10 @@ export default function Dashboard({ auth }: PageProps) {
     };
 
     const handleJoin = () => {
-        if (meetingId.trim() === '') return;
+        if (meetingId.trim() === '') {
+            window.alert('Silakan masukkan kode meeting!');
+            return;
+        }
         router.visit(`/meeting/${meetingId}`);
     };
 
